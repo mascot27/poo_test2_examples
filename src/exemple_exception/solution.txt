@@ -1,0 +1,68 @@
+The methods throw the following exceptions:
+
+m1 throws java.lang.NullPointerException
+m2 throws java.lang.ArrayIndexOutOfBoundsException
+m3 throws java.lang.ArithmeticException
+The superclass of all three exceptions is java.lang.RuntimeException.
+
+Put the method call into a try block and follow it with a catch clause that catches the exception. To display the exception and where it occured use the printStrackTrace() method of the exception. The output will be exactly the same you see when the program does not catch the exception and the VM stops execution of the program.
+
+try {
+    l.m1();
+}
+catch (NullPointerException ex) {
+    ex.printStackTrace();
+}
+try {
+    l.m2();
+}
+catch (ArrayIndexOutOfBoundsException ex) {
+    ex.printStackTrace();
+}
+try {
+    l.m3();
+}
+catch (ArithmeticException ex) {
+    ex.printStackTrace();
+}
+Code:
+
+double inverse(double x) {
+    if (x == 0.0) throw new IllegalArgumentException();
+    return 1.0/x;
+}
+Checked exceptions are checked at compile time: Any method throwing a checked exception needs to delare in its header that it may throw the exception: void method() throws XyzException {...}. The compiler will ensure that any code that calls the method has either
+
+a suitable catch clause to deal with the exception, or
+declares itself that it may throw the exception.
+Unchecked exceptions do not need to be declared by the method and code calling the method may choose to not catch the exception. Unchecked exceptions are RuntimeException and their subclasses (and Error and subclasses which are used by the VM itself).
+
+Recommendation: Use unchecked exceptions only for errors in the program logic where the one responsible for the error is a developer of the program (this includes the case that a developer made a mistake in calling the method). The program is inconsistent and needs to be fixed. Do not use them for errors coming from outside the program, for example non-existing files, invalid input data or non-responding servers.
+
+Here, IllegalArgumentException inherits from RuntimeException and does not need to be declared.
+
+To define our own custom exception we create a class that inherits from Exception. Because we want to be able to add an explanation we need to have a constructor that takes the cause a string argument. We simply call the constructor of Exception.
+
+class HeyYouDidntPayAttentionException extends Exception {
+    HeyYouDidntPayAttentionException(String cause) { super(cause); }
+}
+As this is a checked exception the method needs to declare it in it header.
+
+double inverse2(double x) throws  HeyYouDidntPayAttentionException {
+    if (x == 0.0) throw new HeyYouDidntPayAttentionException("Cannot divide by 0");
+    return 1.0/x;
+}
+The code that calls the method:
+
+try {
+    l.inverse2(0.0);
+}
+catch (HeyYouDidntPayAttentionException ex) {
+    ex.printStackTrace();
+}
+printStackTrace() displays the exception and the cause:
+
+ex_exception.HeyYouDidntPayAttentionException: Cannot divide by 0
+    at ex_exception.Library.inverse2(Library.java:20)
+    at ex_exception.Main.test(Library.java:52)
+    at ex_exception.Main.main(Library.java:59)
